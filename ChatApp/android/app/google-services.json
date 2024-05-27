@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "816525058353",
+    "project_id": "chatapp-7e442",
+    "storage_bucket": "chatapp-7e442.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816525058353:android:527f98bac352367e6c5010",
+        "android_client_info": {
+          "package_name": "com.lonalia.chatApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkxvKkQiklkIXuu9iHs4iU31QqCxtmKGM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
