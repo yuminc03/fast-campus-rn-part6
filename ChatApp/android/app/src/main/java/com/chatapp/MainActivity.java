@@ -1,4 +1,4 @@
-package com.chatapp;
+package com.lonalia.chatApp;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

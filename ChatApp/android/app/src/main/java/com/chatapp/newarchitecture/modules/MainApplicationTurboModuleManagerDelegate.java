@@ -1,4 +1,4 @@
-package com.chatapp.newarchitecture.modules;
+package com.lonalia.chatApp.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;
