@@ -152,7 +152,6 @@ const SignupScreen = () => {
           <TextInput
             value={name}
             style={styles.input}
-            secureTextEntry
             onChangeText={onChangeNameText}
           />
           {nameErrorText && (
