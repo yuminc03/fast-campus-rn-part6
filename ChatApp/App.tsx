@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 
 import { RootStackParamList } from './src/types';
-import { SignupScreen } from './src/Signup/SignupScreen';
+import SignupScreen from './src/Signup/SignupScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
