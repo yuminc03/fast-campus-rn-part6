@@ -1,8 +1,9 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Colors } from '../modules/Colors';
+import { useNavigation } from '@react-navigation/native';
 
 interface ScreenProps {
   title?: string;
@@ -10,10 +11,21 @@ interface ScreenProps {
 }
 
 const Screen = ({ children, title }: ScreenProps) => {
+  const { goBack, canGoBack } = useNavigation();
+  const onPressBackButton = useCallback(() => {
+    goBack();
+  }, [goBack]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.left} />
+        <View style={styles.left}>
+          {canGoBack() && (
+            <TouchableOpacity onPress={onPressBackButton}>
+              <Text style={styles.backButtonText}>{'Back'}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
         <View style={styles.center}>
           <Text style={styles.headerTitle}>{title}</Text>
         </View>
@@ -34,6 +46,8 @@ const styles = StyleSheet.create({
   },
   left: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   center: {
     flex: 3,
@@ -50,6 +64,10 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
+  },
+  backButtonText: {
+    fontSize: 12,
+    color: Colors.BLACK,
   },
 });
 
