@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 import { Colors } from '../modules/Colors';
-import { useNavigation } from '@react-navigation/native';
 
 interface ScreenProps {
   title?: string;
