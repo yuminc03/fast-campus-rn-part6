@@ -9,6 +9,7 @@ import SigninScreen from './src/SigninScreen/SigninScreen';
 import AuthContext from './src/components/AuthContext';
 import HomeScreen from './src/HomeScreen/HomeScreen';
 import LoadingScreen from './src/LoadingScreen/LoadingScreen';
+import ChatScreen from './src/ChatScreen/ChatScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -22,7 +23,12 @@ const Screens = () => {
 
     if (user != null && !processingSignup && !processingSignin) {
       // login
-      return <Stack.Screen name="Home" component={HomeScreen} />;
+      return (
+        <>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Chat" component={ChatScreen} />
+        </>
+      );
     }
 
     // logout

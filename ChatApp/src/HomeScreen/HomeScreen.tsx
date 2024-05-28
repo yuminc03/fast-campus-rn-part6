@@ -9,16 +9,20 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import Screen from '../components/Screen';
 import AuthContext from '../components/AuthContext';
 import { Colors } from '../modules/Colors';
-import { Collections, User } from '../types';
+import { Collections, RootStackParamList, User } from '../types';
 
 const HomeScreen = () => {
   const { user: me } = useContext(AuthContext);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
+  const { navigate } =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const onPressLogout = useCallback(() => {
     auth().signOut();
@@ -84,7 +88,12 @@ const HomeScreen = () => {
                 renderItem={({ item: user }) => (
                   <TouchableOpacity
                     style={styles.userListItem}
-                    onPress={() => {}}>
+                    onPress={() => {
+                      navigate('Chat', {
+                        userIds: [me.userId, user.userId],
+                        other: user,
+                      });
+                    }}>
                     <Text style={styles.otherNameText}>{user.name}</Text>
                     <Text style={styles.otherEmailText}>{user.email}</Text>
                   </TouchableOpacity>
