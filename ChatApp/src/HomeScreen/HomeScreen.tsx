@@ -11,6 +11,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import ImageCropPicker from 'react-native-image-crop-picker';
 
 import Screen from '../components/Screen';
 import AuthContext from '../components/AuthContext';
@@ -46,6 +47,14 @@ const HomeScreen = () => {
     loadUsers();
   }, [loadUsers]);
 
+  const onPressProfile = useCallback(async () => {
+    const image = await ImageCropPicker.openPicker({
+      cropping: true,
+      cropperCircleOverlay: true,
+    });
+    console.log('image', image);
+  }, []);
+
   const renderLoading = useCallback(
     () => (
       <View style={styles.loadingContainer}>
@@ -65,6 +74,7 @@ const HomeScreen = () => {
         <View>
           <Text style={styles.sectionTitleText}>나의 정보</Text>
           <View style={styles.userSectionContent}>
+            <TouchableOpacity style={styles.profile} onPress={onPressProfile} />
             <View style={styles.myProfile}>
               <Text style={styles.myNameText}>{me.name}</Text>
               <Text style={styles.myEmailText}>{me.email}</Text>
@@ -180,6 +190,13 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: Colors.BLACK,
+  },
+  profile: {
+    width: 48,
+    height: 48,
+    borderRadius: 48 / 2,
+    backgroundColor: Colors.GRAY,
+    marginRight: 10,
   },
 });
 

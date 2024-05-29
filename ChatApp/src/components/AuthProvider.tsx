@@ -64,6 +64,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
+  const updateProfileImage = useCallback(async (filepath: string) => {}, []);
+
   const value = useMemo(() => {
     return {
       initialized,
