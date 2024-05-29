@@ -16,6 +16,7 @@ import { RootStackParamList } from '../types';
 import useChat from './useChat';
 import { Colors } from '../modules/Colors';
 import AuthContext from '../components/AuthContext';
+import Message from './Message';
 
 const ChatScreen = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
@@ -59,15 +60,17 @@ const ChatScreen = () => {
           />
         </View>
         <FlatList
+          inverted
           style={styles.messageList}
           data={messages}
           renderItem={({ item: message }) => {
             return (
-              <View>
-                <Text>{message.user.name}</Text>
-                <Text>{message.text}</Text>
-                <Text>{message.createdAt.toISOString()}</Text>
-              </View>
+              <Message
+                name={message.user.name}
+                text={message.text}
+                createdAt={message.createdAt}
+                isOtherMessage={message.user.userId !== me?.userId}
+              />
             );
           }}
         />
@@ -89,7 +92,15 @@ const ChatScreen = () => {
         </View>
       </View>
     );
-  }, [chat, messages, onChangeText, onPressSendButton, sendDisabled, text]);
+  }, [
+    chat,
+    me?.userId,
+    messages,
+    onChangeText,
+    onPressSendButton,
+    sendDisabled,
+    text,
+  ]);
 
   return (
     <Screen title={other.name}>
