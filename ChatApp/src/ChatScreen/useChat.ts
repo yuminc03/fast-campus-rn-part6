@@ -86,13 +86,14 @@ const useChat = (userIds: string[]) => {
           .collection(Collections.MESSAGES)
           .add(data);
 
+        // 이전 메시지에 최근 메시지 연결
         setMessages(prevMessages =>
-          prevMessages.concat([
+          [
             {
               id: doc.id,
               ...data,
             },
-          ]),
+          ].concat(prevMessages),
         );
       } finally {
         setSending(false);
@@ -104,12 +105,12 @@ const useChat = (userIds: string[]) => {
   const loadMessages = useCallback(async (chatId: string) => {
     try {
       setLoadingMessages(true);
-      /// 오름차순으로 메시지들 가져옴
+      /// 내림차순으로 메시지들 가져옴
       const messagesSnapshot = await firestore()
         .collection(Collections.CHATS)
         .doc(chatId)
         .collection(Collections.MESSAGES)
-        .orderBy('createdAt', 'asc')
+        .orderBy('createdAt', 'desc')
         .get();
 
       const message = messagesSnapshot.docs.map<Message>(doc => {
