@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.google.gms.google-services"
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -88,7 +89,7 @@ apply from: "../../node_modules/react-native/react.gradle"
 /**
  * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
- *   - An APK that only works on x86 devices
+ *   - An APK that only works oclasspathn x86 devices
  * The advantage is the size of the APK is reduced by about 4MB.
  * Upload all the APKs to the Play Store and people will download
  * the correct one based on the CPU architecture of their device.
