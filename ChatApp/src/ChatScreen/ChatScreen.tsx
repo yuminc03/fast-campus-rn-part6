@@ -1,9 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
+  TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
@@ -17,6 +19,17 @@ const ChatScreen = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
   const { other, userIds } = params;
   const { loadingChat, chat } = useChat(userIds);
+  const [text, setText] = useState('');
+  const sendDisabled = useMemo(() => text.length === 0, [text]);
+
+  const onChangeText = useCallback((newText: string) => {
+    setText(newText);
+  }, []);
+
+  const onPressSendButton = useCallback(() => {
+    // TODO: send text message
+    setText('');
+  }, []);
 
   const renderChat = useCallback(() => {
     if (chat == null) {
@@ -37,9 +50,26 @@ const ChatScreen = () => {
             horizontal
           />
         </View>
+        <View style={styles.messageList} />
+        <View style={styles.inputContainer}>
+          <View style={styles.textInputContainer}>
+            <TextInput
+              style={styles.textInput}
+              value={text}
+              onChangeText={onChangeText}
+              multiline
+            />
+          </View>
+          <TouchableOpacity
+            style={sendDisabled ? disabledSendButtonStyle : styles.sendButton}
+            disabled={sendDisabled}
+            onPress={onPressSendButton}>
+            <Text style={styles.sendText}>Send</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
-  }, [chat]);
+  }, [chat, onChangeText, onPressSendButton, sendDisabled, text]);
 
   return (
     <Screen title={other.name}>
@@ -77,6 +107,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   userProfile: {
+    backgroundColor: Colors.BLACK,
     width: 34,
     height: 34,
     borderRadius: 34 / 2,
@@ -88,6 +119,44 @@ const styles = StyleSheet.create({
   userProfileText: {
     color: Colors.WHITE,
   },
+  messageList: {
+    flex: 1,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  textInputContainer: {
+    flex: 1,
+    marginRight: 10,
+    borderRadius: 24,
+    borderColor: Colors.BLACK,
+    borderWidth: 1,
+    overflow: 'hidden',
+    padding: 10,
+    minHeight: 50,
+    justifyContent: 'center',
+  },
+  textInput: {
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+  sendButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.BLACK,
+    width: 50,
+    height: 50,
+    borderRadius: 50 / 2,
+  },
+  sendText: {
+    color: Colors.WHITE,
+  },
 });
+
+const disabledSendButtonStyle = [
+  styles.sendButton,
+  { backgroundColor: Colors.GRAY },
+];
 
 export default ChatScreen;
