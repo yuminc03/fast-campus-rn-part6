@@ -22,6 +22,13 @@ const useChat = (userIds: string[]) => {
   const [sending, setSending] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
 
+  const addNewMessages = useCallback((newMessages: Message[]) => {
+    setMessages(prevMessage => {
+      // 중복된 메시지를 제외하고 이전 메시지와 합치기
+      return _.uniqBy(newMessages.concat(prevMessage), m => m.id);
+    });
+  }, []);
+
   const loadChat = useCallback(async () => {
     try {
       setLoadingChat(true);
@@ -86,53 +93,59 @@ const useChat = (userIds: string[]) => {
           .collection(Collections.MESSAGES)
           .add(data);
 
-        // 이전 메시지에 최근 메시지 연결
-        setMessages(prevMessages =>
-          [
-            {
-              id: doc.id,
-              ...data,
-            },
-          ].concat(prevMessages),
-        );
+        addNewMessages([
+          {
+            id: doc.id,
+            ...data,
+          },
+        ]);
       } finally {
         setSending(false);
       }
     },
-    [chat?.id],
+    [addNewMessages, chat?.id],
   );
 
-  const loadMessages = useCallback(async (chatId: string) => {
-    try {
-      setLoadingMessages(true);
-      /// 내림차순으로 메시지들 가져옴
-      const messagesSnapshot = await firestore()
-        .collection(Collections.CHATS)
-        .doc(chatId)
-        .collection(Collections.MESSAGES)
-        .orderBy('createdAt', 'desc')
-        .get();
-
-      const message = messagesSnapshot.docs.map<Message>(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          user: data.user,
-          text: data.text,
-          createdAt: data.createdAt.toDate(),
-        };
-      });
-      setMessages(message);
-    } finally {
-      setLoadingMessages(false);
-    }
-  }, []);
-
   useEffect(() => {
-    if (chat?.id != null) {
-      loadMessages(chat.id);
+    if (chat?.id == null) {
+      return;
     }
-  }, [chat?.id, loadMessages]);
+
+    // message가 추가되었을 때 onSnapshot()이 호출
+    // query에 대한 문서가 들어옴 (loadMessages 호출과 같은 효과)
+    setLoadingMessages(true);
+    const unsubscribe = firestore()
+      .collection(Collections.CHATS)
+      .doc(chat.id)
+      .collection(Collections.MESSAGES)
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(snapshot => {
+        const newMessages = snapshot
+          .docChanges()
+          .filter(({ type }) => type === 'added')
+          .map(docChange => {
+            const { doc } = docChange;
+            const docData = doc.data();
+            // 가져온 데이터(docData)를 메시지 타입으로 만들어 return
+            const newMessage: Message = {
+              id: docData.id,
+              text: docData.text,
+              user: docData.user,
+              createdAt: docData.createdAt.toDate(),
+            };
+
+            return newMessage;
+          });
+
+        addNewMessages(newMessages);
+        setLoadingMessages(false);
+      });
+
+    // hook update or unmount 될 때 실행
+    return () => {
+      unsubscribe();
+    };
+  }, [addNewMessages, chat?.id]);
 
   return {
     chat,
