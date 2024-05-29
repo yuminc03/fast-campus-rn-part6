@@ -20,10 +20,12 @@ import AuthContext from '../components/AuthContext';
 const ChatScreen = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
   const { other, userIds } = params;
-  const { loadingChat, chat, sendMessage } = useChat(userIds);
+  const { loadingChat, chat, sendMessage, messages, loadingMessages } =
+    useChat(userIds);
   const [text, setText] = useState('');
   const sendDisabled = useMemo(() => text.length === 0, [text]);
   const { user: me } = useContext(AuthContext);
+  const loading = loadingChat || loadingMessages;
 
   const onChangeText = useCallback((newText: string) => {
     setText(newText);
@@ -56,7 +58,19 @@ const ChatScreen = () => {
             horizontal
           />
         </View>
-        <View style={styles.messageList} />
+        <FlatList
+          style={styles.messageList}
+          data={messages}
+          renderItem={({ item: message }) => {
+            return (
+              <View>
+                <Text>{message.user.name}</Text>
+                <Text>{message.text}</Text>
+                <Text>{message.createdAt.toISOString()}</Text>
+              </View>
+            );
+          }}
+        />
         <View style={styles.inputContainer}>
           <View style={styles.textInputContainer}>
             <TextInput
@@ -75,12 +89,12 @@ const ChatScreen = () => {
         </View>
       </View>
     );
-  }, [chat, onChangeText, onPressSendButton, sendDisabled, text]);
+  }, [chat, messages, onChangeText, onPressSendButton, sendDisabled, text]);
 
   return (
     <Screen title={other.name}>
       <View style={styles.container}>
-        {loadingChat ? (
+        {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator />
           </View>

@@ -20,6 +20,7 @@ const useChat = (userIds: string[]) => {
   const [loadingChat, setLoadingChat] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [sending, setSending] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
 
   const loadChat = useCallback(async () => {
     try {
@@ -61,6 +62,10 @@ const useChat = (userIds: string[]) => {
     }
   }, [userIds]);
 
+  useEffect(() => {
+    loadChat();
+  }, [loadChat]);
+
   const sendMessage = useCallback(
     async (text: string, user: User) => {
       if (chat?.id == null) {
@@ -96,9 +101,37 @@ const useChat = (userIds: string[]) => {
     [chat?.id],
   );
 
+  const loadMessages = useCallback(async (chatId: string) => {
+    try {
+      setLoadingMessages(true);
+      /// 오름차순으로 메시지들 가져옴
+      const messagesSnapshot = await firestore()
+        .collection(Collections.CHATS)
+        .doc(chatId)
+        .collection(Collections.MESSAGES)
+        .orderBy('createdAt', 'asc')
+        .get();
+
+      const message = messagesSnapshot.docs.map<Message>(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          user: data.user,
+          text: data.text,
+          createdAt: data.createdAt.toDate(),
+        };
+      });
+      setMessages(message);
+    } finally {
+      setLoadingMessages(false);
+    }
+  }, []);
+
   useEffect(() => {
-    loadChat();
-  }, [loadChat]);
+    if (chat?.id != null) {
+      loadMessages(chat.id);
+    }
+  }, [chat?.id, loadMessages]);
 
   return {
     chat,
@@ -106,6 +139,7 @@ const useChat = (userIds: string[]) => {
     sendMessage,
     messages,
     sending,
+    loadingMessages,
   };
 };
 
