@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import Screen from '../components/Screen';
 import { RootStackParamList } from '../types';
@@ -65,6 +66,7 @@ const ChatScreen = () => {
             disabled={sendDisabled}
             onPress={onPressSendButton}>
             <Text style={styles.sendText}>Send</Text>
+            <Icon style={styles.sendIcon} name="send" />
           </TouchableOpacity>
         </View>
       </View>
@@ -150,6 +152,9 @@ const styles = StyleSheet.create({
     borderRadius: 50 / 2,
   },
   sendText: {
+    color: Colors.WHITE,
+  },
+  sendIcon: {
     color: Colors.WHITE,
   },
 });
