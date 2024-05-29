@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -15,13 +15,15 @@ import Screen from '../components/Screen';
 import { RootStackParamList } from '../types';
 import useChat from './useChat';
 import { Colors } from '../modules/Colors';
+import AuthContext from '../components/AuthContext';
 
 const ChatScreen = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
   const { other, userIds } = params;
-  const { loadingChat, chat } = useChat(userIds);
+  const { loadingChat, chat, sendMessage } = useChat(userIds);
   const [text, setText] = useState('');
   const sendDisabled = useMemo(() => text.length === 0, [text]);
+  const { user: me } = useContext(AuthContext);
 
   const onChangeText = useCallback((newText: string) => {
     setText(newText);
@@ -29,8 +31,11 @@ const ChatScreen = () => {
 
   const onPressSendButton = useCallback(() => {
     // TODO: send text message
-    setText('');
-  }, []);
+    if (me != null) {
+      sendMessage(text, me);
+      setText('');
+    }
+  }, [me, sendMessage, text]);
 
   const renderChat = useCallback(() => {
     if (chat == null) {
