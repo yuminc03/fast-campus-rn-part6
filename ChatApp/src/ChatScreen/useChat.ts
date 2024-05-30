@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import firestore from '@react-native-firebase/firestore';
-import _ from 'lodash';
+import firestore, {
+  FirebaseFirestoreTypes,
+  collection,
+} from '@react-native-firebase/firestore';
+import _, { mapValues } from 'lodash';
 
 import {
   Chat,
@@ -88,24 +91,25 @@ const useChat = (userIds: string[]) => {
         throw new Error('Chat is not loaded');
       }
 
+      // firestore.FieldValue.serverTimestamp()는 DB에 들어왔을 때 저장되어서 local에서는 얻기가 어려움
       try {
         setSending(true);
-        const data: FirestoreMessageData = {
-          text: text,
-          user: user,
-          createdAt: new Date(),
-        };
-
         const doc = await firestore()
           .collection(Collections.CHATS)
           .doc(chat.id)
           .collection(Collections.MESSAGES)
-          .add(data);
+          .add({
+            text: text,
+            user: user,
+            createdAt: firestore.FieldValue.serverTimestamp(),
+          });
 
         addNewMessages([
           {
             id: doc.id,
-            ...data,
+            text: text,
+            user: user,
+            createdAt: new Date(),
           },
         ]);
       } finally {
@@ -155,6 +159,59 @@ const useChat = (userIds: string[]) => {
       unsubscribe();
     };
   }, [addNewMessages, chat?.id]);
+
+  const updateMessageReadAt = useCallback(
+    async (userId: string) => {
+      if (chat == null) {
+        return null;
+      }
+
+      firestore()
+        .collection(Collections.CHATS)
+        .doc(chat.id)
+        .update({
+          [`userToMessageReadAt.${userId}`]:
+            firestore.FieldValue.serverTimestamp(), // firestore server 시간 기준으로 저장
+        });
+    },
+    [chat],
+  );
+
+  const [userToMessagereadAt, setUserToMessageReadAt] = useState<{
+    [userId: string]: Date;
+  }>({});
+
+  useEffect(() => {
+    if (chat == null) {
+      return;
+    }
+
+    const unsubscribe = firestore()
+      .collection(Collections.CHATS)
+      .doc(chat?.id)
+      .onSnapshot(snapshot => {
+        // onSnapshot - firestore의 문서(doc)가 업데이트될 때마다 호출
+        if (snapshot.metadata.hasPendingWrites) {
+          return;
+          // local 변경에 대한 호출은 무시
+        }
+
+        const chatData = snapshot.data() ?? {};
+        const userToMessagReadTimestamp = chatData.userToMessageReadAt as {
+          [userId: string]: FirebaseFirestoreTypes.Timestamp;
+        };
+        // FirebaseFirestoreTypes.Timestamp에 .toDate()해서 userToMessageDate에 저장
+        const userToMessageDate = _.mapValues(
+          userToMessagReadTimestamp,
+          updateMessageReadTimestemp => updateMessageReadTimestemp.toDate(),
+        );
+        setUserToMessageReadAt(userToMessageDate);
+      });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [chat]);
 
   return {
     chat,
