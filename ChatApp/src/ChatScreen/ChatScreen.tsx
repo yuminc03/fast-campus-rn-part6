@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -18,16 +24,30 @@ import { Colors } from '../modules/Colors';
 import AuthContext from '../components/AuthContext';
 import Message from './Message';
 import UserPhoto from '../components/UserPhoto';
+import moment from 'moment';
 
 const ChatScreen = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
   const { other, userIds } = params;
-  const { loadingChat, chat, sendMessage, messages, loadingMessages } =
-    useChat(userIds);
+  const {
+    loadingChat,
+    chat,
+    sendMessage,
+    messages,
+    loadingMessages,
+    userToMessageReadAt,
+    updateMessageReadAt,
+  } = useChat(userIds);
   const [text, setText] = useState('');
   const sendDisabled = useMemo(() => text.length === 0, [text]);
   const { user: me } = useContext(AuthContext);
   const loading = loadingChat || loadingMessages;
+
+  useEffect(() => {
+    if (me != null && messages.length > 0) {
+      updateMessageReadAt(me?.userId);
+    }
+  }, [me, messages.length, updateMessageReadAt]);
 
   const onChangeText = useCallback((newText: string) => {
     setText(newText);
@@ -71,6 +91,16 @@ const ChatScreen = () => {
           renderItem={({ item: message }) => {
             // 실시간으로 업데이트 되는 users 정보중 userId와 같은 것을 가져옴
             const user = chat.users.find(u => u.userId === message.user.userId);
+            const unReadUsers = chat.users.filter(u => {
+              const messageReadAt = userToMessageReadAt[u.userId] ?? null;
+              if (messageReadAt == null) {
+                return true;
+              }
+
+              return moment(messageReadAt).isBefore(message.createdAt);
+            });
+
+            const unreadCount = unReadUsers.length;
             return (
               <Message
                 name={user?.name ?? ''}
@@ -78,6 +108,7 @@ const ChatScreen = () => {
                 createdAt={message.createdAt}
                 isOtherMessage={message.user.userId !== me?.userId}
                 imageUrl={user?.profileUrl}
+                unreadCount={unreadCount}
               />
             );
           }}
@@ -111,6 +142,7 @@ const ChatScreen = () => {
     onPressSendButton,
     sendDisabled,
     text,
+    userToMessageReadAt,
   ]);
 
   return (

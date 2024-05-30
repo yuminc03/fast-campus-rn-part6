@@ -11,6 +11,7 @@ interface MessageProps {
   createdAt: Date;
   isOtherMessage: boolean;
   imageUrl?: string;
+  unreadCount: number;
 }
 
 const Message = ({
@@ -19,19 +20,25 @@ const Message = ({
   createdAt,
   isOtherMessage,
   imageUrl,
+  unreadCount = 0,
 }: MessageProps) => {
   const messageStyles = isOtherMessage ? otherMessageStyles : styles;
   const renderMessageContainer = useCallback(() => {
     const components = [
-      <Text key="timeText" style={messageStyles.timeText}>
-        {moment(createdAt).format('HH:mm')}
-      </Text>,
+      <View key="metaInfo" style={messageStyles.metaInfo}>
+        {unreadCount > 0 && (
+          <Text style={styles.unreadCountText}>{unreadCount}</Text>
+        )}
+        <Text key="timeText" style={messageStyles.timeText}>
+          {moment(createdAt).format('HH:mm')}
+        </Text>
+      </View>,
       <View key="message" style={messageStyles.bubble}>
         <Text style={messageStyles.messageText}>{text}</Text>
       </View>,
     ];
     return isOtherMessage ? components.reverse() : components;
-  }, [createdAt, isOtherMessage, messageStyles, text]);
+  }, [createdAt, isOtherMessage, messageStyles, text, unreadCount]);
 
   return (
     <View style={styles.root}>
@@ -71,7 +78,6 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 12,
     color: Colors.GRAY,
-    marginRight: 4,
   },
   bubble: {
     backgroundColor: Colors.BLACK,
@@ -88,13 +94,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  unreadCountText: {
+    fontSize: 12,
+    color: Colors.GRAY,
+  },
+  metaInfo: {
+    marginRight: 4,
+    alignItems: 'flex-end',
+  },
 });
 
 const otherMessageStyles = {
   container: [styles.container, { alignItems: 'flex-start' as const }],
   bubble: [styles.bubble, { backgroundColor: Colors.LIGHT_GRAY }],
   messageText: [styles.messageText, { color: Colors.BLACK }],
-  timeText: [styles.timeText, { marginRight: 0, marginLeft: 0 }],
+  timeText: [styles.timeText],
+  metaInfo: [
+    styles.metaInfo,
+    { alignItems: 'flex-start' as const, marginRight: 0, marginLeft: 4 },
+  ],
 };
 
 export default Message;

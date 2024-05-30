@@ -1,17 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import firestore, {
   FirebaseFirestoreTypes,
-  collection,
 } from '@react-native-firebase/firestore';
-import _, { mapValues } from 'lodash';
+import _ from 'lodash';
 
-import {
-  Chat,
-  Collections,
-  FirestoreMessageData,
-  Message,
-  User,
-} from '../types';
+import { Chat, Collections, Message, User } from '../types';
 
 const getChatKey = (userIDs: string[]) => {
   // userId로 정렬
@@ -133,6 +126,10 @@ const useChat = (userIds: string[]) => {
       .collection(Collections.MESSAGES)
       .orderBy('createdAt', 'desc')
       .onSnapshot(snapshot => {
+        if (snapshot.metadata.hasPendingWrites) {
+          return;
+        }
+
         const newMessages = snapshot
           .docChanges()
           .filter(({ type }) => type === 'added')
@@ -177,7 +174,7 @@ const useChat = (userIds: string[]) => {
     [chat],
   );
 
-  const [userToMessagereadAt, setUserToMessageReadAt] = useState<{
+  const [userToMessageReadAt, setUserToMessageReadAt] = useState<{
     [userId: string]: Date;
   }>({});
 
@@ -220,6 +217,8 @@ const useChat = (userIds: string[]) => {
     messages,
     sending,
     loadingMessages,
+    userToMessageReadAt,
+    updateMessageReadAt,
   };
 };
 
