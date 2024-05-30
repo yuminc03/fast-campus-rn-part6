@@ -16,6 +16,8 @@ import {
 } from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import moment from 'moment';
+import ImageCropPicker from 'react-native-image-crop-picker';
 
 import Screen from '../components/Screen';
 import { RootStackParamList } from '../types';
@@ -24,7 +26,6 @@ import { Colors } from '../modules/Colors';
 import AuthContext from '../components/AuthContext';
 import Message from './Message';
 import UserPhoto from '../components/UserPhoto';
-import moment from 'moment';
 
 const ChatScreen = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
@@ -37,6 +38,8 @@ const ChatScreen = () => {
     loadingMessages,
     userToMessageReadAt,
     updateMessageReadAt,
+    sendImageMessage,
+    sending,
   } = useChat(userIds);
   const [text, setText] = useState('');
   const sendDisabled = useMemo(() => text.length === 0, [text]);
@@ -60,6 +63,13 @@ const ChatScreen = () => {
       setText('');
     }
   }, [me, sendMessage, text]);
+
+  const onPressImageButton = useCallback(async () => {
+    if (me != null) {
+      const image = await ImageCropPicker.openPicker({ cropping: true });
+      sendImageMessage(image.path, me);
+    }
+  }, [me, sendImageMessage]);
 
   const renderChat = useCallback(() => {
     if (chat == null) {
@@ -101,20 +111,37 @@ const ChatScreen = () => {
             });
 
             const unreadCount = unReadUsers.length;
-            return (
-              <Message
-                name={user?.name ?? ''}
-                text={message.text}
-                createdAt={message.createdAt}
-                isOtherMessage={message.user.userId !== me?.userId}
-                imageUrl={user?.profileUrl}
-                unreadCount={unreadCount}
-              />
-            );
+            if (message.text != null) {
+              return (
+                <Message
+                  name={user?.name ?? ''}
+                  text={message.text}
+                  createdAt={message.createdAt}
+                  isOtherMessage={message.user.userId !== me?.userId}
+                  imageUrl={user?.profileUrl}
+                  unreadCount={unreadCount}
+                />
+              );
+            }
+
+            if (message.imageUrl != null) {
+              return null;
+            }
+
+            return null;
           }}
           ItemSeparatorComponent={() => (
             <View style={styles.messageSeparator} />
           )}
+          ListHeaderComponent={() => {
+            if (sending) {
+              return (
+                <View style={styles.sendingContainer}>
+                  <ActivityIndicator />
+                </View>
+              );
+            }
+          }}
         />
         <View style={styles.inputContainer}>
           <View style={styles.textInputContainer}>
@@ -131,18 +158,25 @@ const ChatScreen = () => {
             onPress={onPressSendButton}>
             <Icon style={styles.sendIcon} name="send" />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.imageButton}
+            onPress={onPressImageButton}>
+            <Icon name="image" style={styles.imageIcon} />
+          </TouchableOpacity>
         </View>
       </View>
     );
   }, [
     chat,
-    me?.userId,
     messages,
-    onChangeText,
-    onPressSendButton,
-    sendDisabled,
     text,
+    onChangeText,
+    sendDisabled,
+    onPressSendButton,
+    onPressImageButton,
     userToMessageReadAt,
+    me,
+    sending,
   ]);
 
   return (
@@ -230,6 +264,24 @@ const styles = StyleSheet.create({
   },
   messageSeparator: {
     height: 8,
+  },
+  imageButton: {
+    borderWidth: 1,
+    borderColor: Colors.BLACK,
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+    marginLeft: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imageIcon: {
+    color: Colors.BLACK,
+    fontSize: 32,
+  },
+  sendingContainer: {
+    paddingTop: 10,
+    alignItems: 'flex-end',
   },
 });
 

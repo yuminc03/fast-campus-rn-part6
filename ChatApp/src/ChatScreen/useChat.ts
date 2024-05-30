@@ -3,6 +3,7 @@ import firestore, {
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
 import _ from 'lodash';
+import storage from '@react-native-firebase/storage';
 
 import { Chat, Collections, Message, User } from '../types';
 
@@ -101,6 +102,7 @@ const useChat = (userIds: string[]) => {
           {
             id: doc.id,
             text: text,
+            imageUrl: null,
             user: user,
             createdAt: new Date(),
           },
@@ -139,7 +141,8 @@ const useChat = (userIds: string[]) => {
             // 가져온 데이터(docData)를 메시지 타입으로 만들어 return
             const newMessage: Message = {
               id: docData.id,
-              text: docData.text,
+              text: docData.text ?? null,
+              imageUrl: docData.imageUrl ?? null,
               user: docData.user,
               createdAt: docData.createdAt.toDate(),
             };
@@ -210,6 +213,55 @@ const useChat = (userIds: string[]) => {
     };
   }, [chat]);
 
+  const sendImageMessage = useCallback(
+    async (filepath: string, user: User) => {
+      setSending(true);
+      try {
+        if (chat == null) {
+          throw new Error('Undefined chat');
+        }
+
+        if (user == null) {
+          throw new Error('Undefined user');
+        }
+
+        const originalFileName = _.last(filepath.split('/'));
+        if (originalFileName == null) {
+          throw new Error('Undefined filename');
+        }
+
+        // originalFileName: file.png
+        const fileExt = originalFileName.split('.');
+        const fileName = `${Date.now()}.${fileExt}`;
+        const storagePath = `chat/${chat.id}${fileName}`;
+        await storage().ref(storagePath).putFile(filepath);
+
+        const url = await storage().ref(storagePath).getDownloadURL();
+        const doc = await firestore()
+          .collection(Collections.CHATS)
+          .doc(chat.id)
+          .collection(Collections.MESSAGES)
+          .add({
+            imageUrl: url,
+            user: user,
+            createdAt: firestore.FieldValue.serverTimestamp(),
+          });
+        addNewMessages([
+          {
+            id: doc.id,
+            user: user,
+            text: null,
+            imageUrl: url,
+            createdAt: new Date(),
+          },
+        ]);
+      } finally {
+        setSending(false);
+      }
+    },
+    [chat, addNewMessages],
+  );
+
   return {
     chat,
     loadingChat,
@@ -219,6 +271,7 @@ const useChat = (userIds: string[]) => {
     loadingMessages,
     userToMessageReadAt,
     updateMessageReadAt,
+    sendImageMessage,
   };
 };
 
