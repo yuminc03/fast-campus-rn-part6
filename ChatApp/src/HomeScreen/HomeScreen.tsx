@@ -17,9 +17,10 @@ import Screen from '../components/Screen';
 import AuthContext from '../components/AuthContext';
 import { Colors } from '../modules/Colors';
 import { Collections, RootStackParamList, User } from '../types';
+import Profile from './Profile';
 
 const HomeScreen = () => {
-  const { user: me } = useContext(AuthContext);
+  const { user: me, updateProfileImage } = useContext(AuthContext);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const { navigate } =
@@ -53,7 +54,8 @@ const HomeScreen = () => {
       cropperCircleOverlay: true,
     });
     console.log('image', image);
-  }, []);
+    await updateProfileImage(image.path);
+  }, [updateProfileImage]);
 
   const renderLoading = useCallback(
     () => (
@@ -74,7 +76,11 @@ const HomeScreen = () => {
         <View>
           <Text style={styles.sectionTitleText}>나의 정보</Text>
           <View style={styles.userSectionContent}>
-            <TouchableOpacity style={styles.profile} onPress={onPressProfile} />
+            <Profile
+              style={styles.profile}
+              onPress={onPressProfile}
+              imageUrl={me.profileUrl}
+            />
             <View style={styles.myProfile}>
               <Text style={styles.myNameText}>{me.name}</Text>
               <Text style={styles.myEmailText}>{me.email}</Text>
@@ -192,10 +198,6 @@ const styles = StyleSheet.create({
     color: Colors.BLACK,
   },
   profile: {
-    width: 48,
-    height: 48,
-    borderRadius: 48 / 2,
-    backgroundColor: Colors.GRAY,
     marginRight: 10,
   },
 });
