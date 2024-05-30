@@ -1406,6 +1406,8 @@ PODS:
     - React-logger (= 0.70.3)
     - React-perflogger (= 0.70.3)
   - RecaptchaInterop (100.0.0)
+  - RNAudioRecorderPlayer (3.6.7):
+    - React-Core
   - RNFBApp (20.0.0):
     - Firebase/CoreOnly (= 10.25.0)
     - React-Core
@@ -1471,6 +1473,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - RNAudioRecorderPlayer (from `../node_modules/react-native-audio-recorder-player`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
@@ -1570,6 +1573,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNAudioRecorderPlayer:
+    :path: "../node_modules/react-native-audio-recorder-player"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
@@ -1640,6 +1645,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: e9b1f9310158a1e265bcdfdfd8c62d6174b947a2
   ReactCommon: 01064177e66d652192c661de899b1076da962fd9
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
+  RNAudioRecorderPlayer: 9b34adc281800e5b19258f1b91d889b1ef3abdd6
   RNFBApp: b404b7224b5e0d3a3bf9c555bac0fe135b13a896
   RNFBAuth: 206eb4321c2718309ae9ec6fa40352a7a6bf5fe5
   RNFBFirestore: f23fab683c4ac4cae94ad2807322181507b3f401
