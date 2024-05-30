@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   StyleSheet,
   Text,
@@ -26,6 +27,7 @@ import { Colors } from '../modules/Colors';
 import AuthContext from '../components/AuthContext';
 import Message from './Message';
 import UserPhoto from '../components/UserPhoto';
+import MicButton from './MicButton';
 
 const ChatScreen = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
@@ -70,6 +72,18 @@ const ChatScreen = () => {
       sendImageMessage(image.path, me);
     }
   }, [me, sendImageMessage]);
+
+  const onRecorded = useCallback((path: string) => {
+    Alert.alert('녹음 완료', '음성 메시지를 보낼까요?', [
+      { text: '아니오' },
+      {
+        text: '네',
+        onPress: () => {
+          console.log('path', path);
+        },
+      },
+    ]);
+  }, []);
 
   const renderChat = useCallback(() => {
     if (chat == null) {
@@ -167,6 +181,9 @@ const ChatScreen = () => {
             onPress={onPressImageButton}>
             <Icon name="image" style={styles.imageIcon} />
           </TouchableOpacity>
+          <View>
+            <MicButton onRecorded={onRecorded} />
+          </View>
         </View>
       </View>
     );
@@ -178,8 +195,9 @@ const ChatScreen = () => {
     sendDisabled,
     onPressSendButton,
     onPressImageButton,
-    userToMessageReadAt,
+    onRecorded,
     me,
+    userToMessageReadAt,
     sending,
   ]);
 
@@ -276,6 +294,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 8,
     marginLeft: 8,
+    marginRight: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },

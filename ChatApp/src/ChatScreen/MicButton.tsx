@@ -1,9 +1,17 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { PermissionsAndroid, Platform, StyleSheet } from 'react-native';
+import {
+  PermissionsAndroid,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import AudioRecorderPlayer, {
   AVEncodingOption,
   AudioEncoderAndroidType,
 } from 'react-native-audio-recorder-player';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
+import { Colors } from '../modules/Colors';
 
 interface MicButtonProps {
   onRecorded: (path: string) => void;
@@ -47,8 +55,40 @@ const MicButton = ({ onRecorded }: MicButtonProps) => {
     setRecording(false);
     onRecorded(uri);
   }, [onRecorded]);
+
+  if (recording) {
+    return (
+      <TouchableOpacity style={styles.button} onPress={stopRecord}>
+        <Icon name="stop" style={styles.stopIcon} />
+      </TouchableOpacity>
+    );
+  }
+
+  return (
+    <TouchableOpacity style={styles.button} onPress={startRecord}>
+      <Icon name="mic" style={styles.micIcon} />
+    </TouchableOpacity>
+  );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  button: {
+    borderWidth: 1,
+    borderColor: Colors.BLACK,
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stopIcon: {
+    color: Colors.BLACK,
+    fontSize: 32,
+  },
+  micIcon: {
+    color: Colors.BLACK,
+    fontSize: 32,
+  },
+});
 
 export default MicButton;

@@ -103,6 +103,7 @@ const useChat = (userIds: string[]) => {
             id: doc.id,
             text: text,
             imageUrl: null,
+            audioUrl: null,
             user: user,
             createdAt: new Date(),
           },
@@ -143,6 +144,7 @@ const useChat = (userIds: string[]) => {
               id: docData.id,
               text: docData.text ?? null,
               imageUrl: docData.imageUrl ?? null,
+              audioUrl: docData.audioUrl ?? null,
               user: docData.user,
               createdAt: docData.createdAt.toDate(),
             };
@@ -235,8 +237,8 @@ const useChat = (userIds: string[]) => {
         const fileName = `${Date.now()}.${fileExt}`;
         const storagePath = `chat/${chat.id}${fileName}`;
         await storage().ref(storagePath).putFile(filepath);
-
         const url = await storage().ref(storagePath).getDownloadURL();
+
         const doc = await firestore()
           .collection(Collections.CHATS)
           .doc(chat.id)
@@ -252,6 +254,7 @@ const useChat = (userIds: string[]) => {
             user: user,
             text: null,
             imageUrl: url,
+            audioUrl: null,
             createdAt: new Date(),
           },
         ]);
@@ -260,6 +263,55 @@ const useChat = (userIds: string[]) => {
       }
     },
     [chat, addNewMessages],
+  );
+
+  const sendAudioMessage = useCallback(
+    async (filepath: string, user: User) => {
+      setSending(true);
+      try {
+        if (chat == null) {
+          throw new Error('Undefined chat');
+        }
+
+        if (user == null) {
+          throw new Error('Undefined user');
+        }
+
+        const originalFileName = _.last(filepath.split('/'));
+        if (originalFileName == null) {
+          throw new Error('Undefined filename');
+        }
+
+        // originalFileName: file.png
+        const fileExt = originalFileName.split('.');
+        const fileName = `${Date.now()}.${fileExt}`;
+        const storagePath = `chat/${chat.id}${fileName}`;
+        await storage().ref(storagePath).putFile(filepath);
+        const url = await storage().ref(storagePath).getDownloadURL();
+        const doc = await firestore()
+          .collection(Collections.CHATS)
+          .doc(chat.id)
+          .collection(Collections.MESSAGES)
+          .add({
+            audioUrl: url,
+            user: user,
+            createdAt: firestore.FieldValue.serverTimestamp(),
+          });
+        addNewMessages([
+          {
+            id: doc.id,
+            user: user,
+            text: null,
+            imageUrl: null,
+            audioUrl: url,
+            createdAt: new Date(),
+          },
+        ]);
+      } finally {
+        setSending(false);
+      }
+    },
+    [addNewMessages, chat],
   );
 
   return {
@@ -271,6 +323,7 @@ const useChat = (userIds: string[]) => {
     loadingMessages,
     userToMessageReadAt,
     updateMessageReadAt,
+    sendAudioMessage,
     sendImageMessage,
   };
 };
