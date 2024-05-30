@@ -7,6 +7,8 @@ import {
   View,
   Image,
   ImageStyle,
+  TextStyle,
+  Text,
 } from 'react-native';
 
 import { Colors } from '../modules/Colors';
@@ -16,6 +18,8 @@ interface ProfileProps {
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
   imageUrl?: string;
+  text?: string;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 const Profile = ({
@@ -23,6 +27,8 @@ const Profile = ({
   style: containerStyleProp,
   onPress,
   imageUrl,
+  text,
+  textStyle,
 }: ProfileProps) => {
   const containerStyle = useMemo<StyleProp<ViewStyle>>(() => {
     return [
@@ -43,7 +49,11 @@ const Profile = ({
   return (
     <TouchableOpacity disabled={onPress == null} onPress={onPress}>
       <View style={containerStyle}>
-        {imageUrl && <Image source={{ uri: imageUrl }} style={imageStyle} />}
+        {imageUrl ? (
+          <Image source={{ uri: imageUrl }} style={imageStyle} />
+        ) : text ? (
+          <Text style={textStyle}>{text}</Text>
+        ) : null}
       </View>
     </TouchableOpacity>
   );
