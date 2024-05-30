@@ -69,12 +69,15 @@ const ChatScreen = () => {
           style={styles.messageList}
           data={messages}
           renderItem={({ item: message }) => {
+            // 실시간으로 업데이트 되는 users 정보중 userId와 같은 것을 가져옴
+            const user = chat.users.find(u => u.userId === message.user.userId);
             return (
               <Message
-                name={message.user.name}
+                name={user?.name ?? ''}
                 text={message.text}
                 createdAt={message.createdAt}
                 isOtherMessage={message.user.userId !== me?.userId}
+                imageUrl={user?.profileUrl}
               />
             );
           }}

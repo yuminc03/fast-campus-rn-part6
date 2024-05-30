@@ -3,15 +3,23 @@ import { StyleSheet, Text, View } from 'react-native';
 import moment from 'moment';
 
 import { Colors } from '../modules/Colors';
+import UserPhoto from '../components/UserPhoto';
 
 interface MessageProps {
   name: string;
   text: string;
   createdAt: Date;
   isOtherMessage: boolean;
+  imageUrl?: string;
 }
 
-const Message = ({ name, text, createdAt, isOtherMessage }: MessageProps) => {
+const Message = ({
+  name,
+  text,
+  createdAt,
+  isOtherMessage,
+  imageUrl,
+}: MessageProps) => {
   const messageStyles = isOtherMessage ? otherMessageStyles : styles;
   const renderMessageContainer = useCallback(() => {
     const components = [
@@ -23,26 +31,33 @@ const Message = ({ name, text, createdAt, isOtherMessage }: MessageProps) => {
       </View>,
     ];
     return isOtherMessage ? components.reverse() : components;
-  }, [
-    createdAt,
-    isOtherMessage,
-    messageStyles.bubble,
-    messageStyles.messageText,
-    messageStyles.timeText,
-    text,
-  ]);
+  }, [createdAt, isOtherMessage, messageStyles, text]);
 
   return (
-    <View style={messageStyles.container}>
-      <Text style={styles.nameText}>{name}</Text>
-      <View style={styles.messageContainer}>{renderMessageContainer()}</View>
+    <View style={styles.root}>
+      {isOtherMessage && (
+        <UserPhoto
+          style={styles.userPhoto}
+          imageUrl={imageUrl}
+          name={name}
+          size={34}
+        />
+      )}
+      <View style={messageStyles.container}>
+        <Text style={styles.nameText}>{name}</Text>
+        <View style={styles.messageContainer}>{renderMessageContainer()}</View>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  root: {
+    flexDirection: 'row',
+  },
   container: {
     alignItems: 'flex-end',
+    flex: 1,
   },
   nameText: {
     fontSize: 12,
@@ -67,6 +82,11 @@ const styles = StyleSheet.create({
   messageText: {
     fontSize: 14,
     color: Colors.WHITE,
+  },
+  userPhoto: {
+    marginRight: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
