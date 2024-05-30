@@ -17,6 +17,7 @@ import useChat from './useChat';
 import { Colors } from '../modules/Colors';
 import AuthContext from '../components/AuthContext';
 import Message from './Message';
+import UserPhoto from '../components/UserPhoto';
 
 const ChatScreen = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
@@ -52,9 +53,13 @@ const ChatScreen = () => {
           <FlatList
             data={chat.users}
             renderItem={({ item: user }) => (
-              <View style={styles.userProfile}>
-                <Text style={styles.userProfileText}>{user.name[0]}</Text>
-              </View>
+              <UserPhoto
+                size={34}
+                style={styles.userProfile}
+                name={user.name}
+                nameStyle={styles.userProfileText}
+                imageUrl={user.profileUrl}
+              />
             )}
             horizontal
           />
