@@ -9,10 +9,11 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import messaging from '@react-native-firebase/messaging';
+import Toast from 'react-native-toast-message';
 
 import Screen from '../components/Screen';
 import AuthContext from '../components/AuthContext';
@@ -27,6 +28,7 @@ const HomeScreen = () => {
   const [users, setUsers] = useState<User[]>([]);
   const { navigate } =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const isFocused = useIsFocused();
 
   const onPressLogout = useCallback(() => {
     auth().signOut();
@@ -72,7 +74,7 @@ const HomeScreen = () => {
     // 1. App: background
     const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
       console.log('remoteMessage', remoteMessage);
-      const stringifiedUserIds = remoteMessage?.data?.userIds;
+      const stringifiedUserIds = remoteMessage.data?.userIds;
       if (stringifiedUserIds != null) {
         const userIds = JSON.parse(stringifiedUserIds) as string[];
         console.log('userIds', userIds);
@@ -99,6 +101,38 @@ const HomeScreen = () => {
         }
       });
   }, [navigate]);
+
+  useEffect(() => {
+    // 3. App Foreground
+    const unsubscribe = messaging().onMessage(remoteMessage => {
+      console.log('onMessage remoteMessage', remoteMessage);
+      const { notification } = remoteMessage;
+
+      if (notification != null) {
+        const { title, body } = notification;
+
+        if (isFocused) {
+          Toast.show({
+            type: 'success',
+            text1: title,
+            text2: body,
+            onPress: () => {
+              const stringifiedUserIds = remoteMessage.data?.userIds;
+              if (stringifiedUserIds != null) {
+                const userIds = JSON.parse(stringifiedUserIds) as string[];
+                console.log('userIds', userIds);
+                navigate('Chat', { userIds });
+              }
+            },
+          });
+        }
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [isFocused, navigate]);
 
   if (me == null) {
     return null;
