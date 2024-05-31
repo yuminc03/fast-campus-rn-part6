@@ -12,6 +12,7 @@ import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import messaging from '@react-native-firebase/messaging';
 
 import Screen from '../components/Screen';
 import AuthContext from '../components/AuthContext';
@@ -67,6 +68,38 @@ const HomeScreen = () => {
     [],
   );
 
+  useEffect(() => {
+    // 1. App: background
+    const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log('remoteMessage', remoteMessage);
+      const stringifiedUserIds = remoteMessage?.data?.userIds;
+      if (stringifiedUserIds != null) {
+        const userIds = JSON.parse(stringifiedUserIds) as string[];
+        console.log('userIds', userIds);
+        navigate('Chat', { userIds });
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [navigate]);
+
+  // 2. App: Quit
+  useEffect(() => {
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        console.log('getInitialNotification - remoteMessage', remoteMessage);
+        const stringifiedUserIds = remoteMessage?.data?.userIds;
+        if (stringifiedUserIds != null) {
+          const userIds = JSON.parse(stringifiedUserIds) as string[];
+          console.log('userIds', userIds);
+          navigate('Chat', { userIds });
+        }
+      });
+  }, [navigate]);
+
   if (me == null) {
     return null;
   }
@@ -108,7 +141,6 @@ const HomeScreen = () => {
                     onPress={() => {
                       navigate('Chat', {
                         userIds: [me.userId, user.userId],
-                        other: user,
                       });
                     }}>
                     <UserPhoto
