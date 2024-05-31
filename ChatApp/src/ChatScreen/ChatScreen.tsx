@@ -56,9 +56,11 @@ const ChatScreen = () => {
     return null;
   }, [chat, me]);
 
+  console.log('messages', messages);
+
   useEffect(() => {
     if (me != null && messages.length > 0) {
-      updateMessageReadAt(me?.userId);
+      updateMessageReadAt(me.userId);
     }
   }, [me, messages.length, updateMessageReadAt]);
 

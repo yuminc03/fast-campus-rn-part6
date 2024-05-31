@@ -2,14 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import firestore, {
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
-import _ from 'lodash';
 import storage from '@react-native-firebase/storage';
+import _ from 'lodash';
 
 import { Chat, Collections, Message, User } from '../types';
 
-const getChatKey = (userIDs: string[]) => {
+const getChatKey = (userIds: string[]) => {
   // userId로 정렬
-  return _.orderBy(userIDs, userId => userId, 'asc');
+  return _.orderBy(userIds, userId => userId, 'asc');
 };
 
 const useChat = (userIds: string[]) => {
@@ -112,7 +112,7 @@ const useChat = (userIds: string[]) => {
         setSending(false);
       }
     },
-    [addNewMessages, chat?.id],
+    [chat?.id, addNewMessages],
   );
 
   useEffect(() => {
@@ -233,7 +233,7 @@ const useChat = (userIds: string[]) => {
         }
 
         // originalFileName: file.png
-        const fileExt = originalFileName.split('.');
+        const fileExt = originalFileName.split('.')[1];
         const fileName = `${Date.now()}.${fileExt}`;
         const storagePath = `chat/${chat.id}${fileName}`;
         await storage().ref(storagePath).putFile(filepath);
@@ -283,7 +283,7 @@ const useChat = (userIds: string[]) => {
         }
 
         // originalFileName: file.png
-        const fileExt = originalFileName.split('.');
+        const fileExt = originalFileName.split('.')[1];
         const fileName = `${Date.now()}.${fileExt}`;
         const storagePath = `chat/${chat.id}${fileName}`;
         await storage().ref(storagePath).putFile(filepath);
@@ -321,8 +321,8 @@ const useChat = (userIds: string[]) => {
     messages,
     sending,
     loadingMessages,
-    userToMessageReadAt,
     updateMessageReadAt,
+    userToMessageReadAt,
     sendAudioMessage,
     sendImageMessage,
   };
