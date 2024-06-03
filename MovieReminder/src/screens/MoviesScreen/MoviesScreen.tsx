@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   FlatList,
   Platform,
+  RefreshControl,
   StatusBar,
   StyleSheet,
   View,
@@ -14,7 +15,7 @@ import useMovies from './useMovies';
 import Movie from './Movie';
 
 const MoviesScreen = () => {
-  const { movies, isLoading } = useMovies();
+  const { movies, isLoading, loadMore, canLoadMore, refresh } = useMovies();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -42,6 +43,18 @@ const MoviesScreen = () => {
             />
           )}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
+          onEndReached={() => {
+            if (canLoadMore) {
+              loadMore();
+            }
+          }}
+          refreshControl={
+            <RefreshControl
+              tintColor={Colors.white}
+              refreshing={isLoading}
+              onRefresh={refresh}
+            />
+          }
         />
       )}
     </SafeAreaView>
