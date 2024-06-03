@@ -13,6 +13,8 @@ import Colors from 'open-color';
 import Screen from '../../components/Screen';
 import { RootStackParamList } from '../../types';
 import useMovie from './useMovie';
+import Section from './Section';
+import People from './People';
 
 const MovieScreen = () => {
   const {
@@ -26,7 +28,9 @@ const MovieScreen = () => {
       return null;
     }
 
-    const { posterUrl, title, originalTitle, releaseDate } = movie;
+    const { posterUrl, title, originalTitle, releaseDate, overview, crews } =
+      movie;
+    const director = crews.find(crew => crew.job === 'Director');
 
     return (
       <ScrollView contentContainerStyle={styles.content}>
@@ -45,7 +49,18 @@ const MovieScreen = () => {
               style={styles.releaseDateText}>{`개봉일: ${releaseDate}`}</Text>
           </View>
         </View>
-        
+        <Section title="소개">
+          <Text style={styles.overviewText}>{overview}</Text>
+        </Section>
+        {director != null && (
+          <Section title="감독">
+            <People
+              name={director.name}
+              description={director.job}
+              photoUrl={director.profileUrl ?? undefined}
+            />
+          </Section>
+        )}
       </ScrollView>
     );
   }, [movie]);
@@ -100,6 +115,10 @@ const styles = StyleSheet.create({
   releaseDateText: {
     marginTop: 4,
     fontSize: 16,
+    color: Colors.white,
+  },
+  overviewText: {
+    fontSize: 14,
     color: Colors.white,
   },
 });
