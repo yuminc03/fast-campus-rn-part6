@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   overviewText: {
-    fontSize: 18,
+    fontSize: 12,
     color: Colors.white,
     marginTop: 8,
   },

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import Movie from '../MoviesScreen/Movie';
+import { Movie } from '../../types';
 
 const API_KEY = '8d2d6159bf34d5405fe12f3180319e57';
 const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w500';
@@ -34,7 +34,7 @@ interface GetDiscoverMoviesParams {
   releaseDateLte?: string;
 }
 
-export const getdiscoverMovies = async ({
+export const getDiscoverMovies = async ({
   releaseDateGte,
   releaseDateLte,
 }: GetDiscoverMoviesParams) => {
@@ -45,6 +45,7 @@ export const getdiscoverMovies = async ({
       params: {
         ['release_date.gte']: releaseDateGte,
         ['release_date.lte']: releaseDateLte,
+        region: 'KR',
       },
     },
   );
