@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import {
   ActivityIndicator,
+  FlatList,
   Image,
   ScrollView,
   StyleSheet,
@@ -15,6 +16,7 @@ import { RootStackParamList } from '../../types';
 import useMovie from './useMovie';
 import Section from './Section';
 import People from './People';
+import YouTubeVideo from './YouTubeVideo';
 
 const MovieScreen = () => {
   const {
@@ -28,9 +30,18 @@ const MovieScreen = () => {
       return null;
     }
 
-    const { posterUrl, title, originalTitle, releaseDate, overview, crews } =
-      movie;
+    const {
+      posterUrl,
+      title,
+      originalTitle,
+      releaseDate,
+      overview,
+      crews,
+      casts,
+      videos,
+    } = movie;
     const director = crews.find(crew => crew.job === 'Director');
+    const youtubeVideos = videos.filter(video => video.site === 'Youtube');
 
     return (
       <ScrollView contentContainerStyle={styles.content}>
@@ -61,6 +72,35 @@ const MovieScreen = () => {
             />
           </Section>
         )}
+        <Section title="배우">
+          <FlatList
+            horizontal
+            data={casts}
+            renderItem={({ item: cast }) => {
+              return (
+                <People
+                  name={cast.name}
+                  description={cast.character}
+                  photoUrl={cast.profileUrl ?? undefined}
+                />
+              );
+            }}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            showsHorizontalScrollIndicator={false}
+          />
+        </Section>
+        <Section title="관련영상">
+          {youtubeVideos.map((video, index) => {
+            return (
+              <React.Fragment key={video.id}>
+                <YouTubeVideo title={video.name} youTubeKey={video.key} />
+                {index + 1 < youtubeVideos.length && (
+                  <View style={styles.verticalSeparator} />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </Section>
       </ScrollView>
     );
   }, [movie]);
@@ -120,6 +160,12 @@ const styles = StyleSheet.create({
   overviewText: {
     fontSize: 14,
     color: Colors.white,
+  },
+  separator: {
+    width: 16,
+  },
+  verticalSeparator: {
+    height: 16,
   },
 });
 
