@@ -1,4 +1,4 @@
-package com.lonalia.MovieReminder.newarchitecture.modules;
+package com.lonalia.moviereminder.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

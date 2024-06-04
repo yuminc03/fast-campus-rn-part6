@@ -1,4 +1,4 @@
-package com.lonalia.MovieReminder;
+package com.lonalia.moviereminder;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

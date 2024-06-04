@@ -595,7 +595,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.lonalia.MovieReminder;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lonalia.moviereminder;
 				PRODUCT_NAME = MovieReminder;
 				SWIFT_OBJC_BRIDGING_HEADER = "MovieReminder-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -622,7 +622,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.lonalia.MovieReminder;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lonalia.moviereminder;
 				PRODUCT_NAME = MovieReminder;
 				SWIFT_OBJC_BRIDGING_HEADER = "MovieReminder-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
