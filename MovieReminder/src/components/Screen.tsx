@@ -10,16 +10,21 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
 import Colors from 'open-color';
 
 interface ScreenProps {
   title?: string;
   children?: React.ReactNode;
   headerVisible?: boolean;
+  renderRightComponent?: () => JSX.Element;
 }
 
-const Screen = ({ children, title, headerVisible = true }: ScreenProps) => {
+const Screen = ({
+  children,
+  title,
+  headerVisible = true,
+  renderRightComponent,
+}: ScreenProps) => {
   const { goBack, canGoBack } = useNavigation();
   const onPressBackButton = useCallback(() => {
     goBack();
@@ -44,7 +49,9 @@ const Screen = ({ children, title, headerVisible = true }: ScreenProps) => {
           <View style={styles.center}>
             <Text style={styles.headerTitle}>{title}</Text>
           </View>
-          <View style={styles.right} />
+          <View style={styles.right}>
+            {renderRightComponent != null && renderRightComponent()}
+          </View>
         </View>
       )}
       <View style={styles.body}>{children}</View>
