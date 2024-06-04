@@ -6,6 +6,7 @@ import {
   View,
   StatusBar,
   Platform,
+  useColorScheme,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -28,6 +29,7 @@ const Screen = ({
   headerVisible = true,
   renderRightComponent,
 }: ScreenProps) => {
+  const colorScheme = useColorScheme();
   const { goBack, canGoBack } =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const onPressBackButton = useCallback(() => {
@@ -37,6 +39,8 @@ const Screen = ({
   return (
     <SafeAreaView style={styles.container}>
       {Platform.OS === 'ios' ? (
+        <StatusBar barStyle="light-content" />
+      ) : colorScheme === 'dark' ? (
         <StatusBar barStyle="light-content" />
       ) : (
         <StatusBar barStyle="dark-content" />
