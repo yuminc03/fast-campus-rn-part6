@@ -152,7 +152,7 @@ const MovieScreen = () => {
         </Section>
       </ScrollView>
     );
-  }, [addReminder, movie, hasReminder]);
+  }, [movie, hasReminder, removeReminder, addReminder]);
 
   return (
     <Screen>
