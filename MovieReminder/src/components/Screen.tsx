@@ -11,6 +11,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Colors from 'open-color';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import { RootStackParamList } from '../types';
 
 interface ScreenProps {
   title?: string;
@@ -25,7 +28,8 @@ const Screen = ({
   headerVisible = true,
   renderRightComponent,
 }: ScreenProps) => {
-  const { goBack, canGoBack } = useNavigation();
+  const { goBack, canGoBack } =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const onPressBackButton = useCallback(() => {
     goBack();
   }, [goBack]);
@@ -42,7 +46,7 @@ const Screen = ({
           <View style={styles.left}>
             {canGoBack() && (
               <TouchableOpacity onPress={onPressBackButton}>
-                <Icon style={styles.backButtonIcon} name="arrow-back" />
+                <Icon style={styles.backIcon} name="arrow-back" />
               </TouchableOpacity>
             )}
           </View>
@@ -88,8 +92,8 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
   },
-  backButtonIcon: {
-    color: Colors.black,
+  backIcon: {
+    color: Colors.white,
     fontSize: 20,
     marginLeft: 20,
   },
