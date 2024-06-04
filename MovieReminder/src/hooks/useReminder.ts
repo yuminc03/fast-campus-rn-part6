@@ -10,6 +10,8 @@ import notifee, {
 import { Platform } from 'react-native';
 import moment from 'moment';
 
+const MAX_REMINDER_NUM_FOR_FREE = 2;
+
 const useReminder = () => {
   const [channelId, setChannelId] = useState<string | null>(null);
   const [reminders, setReminders] = useState<TriggerNotification[]>([]);
@@ -47,6 +49,8 @@ const useReminder = () => {
   const addReminder = useCallback(
     async (movieId: number, releaseDate: string, title: string) => {
       const settings = await notifee.requestPermission();
+      const triggeredNotifications = await notifee.getTriggerNotifications();
+
       if (settings.authorizationStatus < AuthorizationStatus.AUTHORIZED) {
         throw new Error('Permission is denied');
       }
@@ -61,6 +65,12 @@ const useReminder = () => {
 
       if (channelId == null) {
         throw new Error('Channel is not created');
+      }
+
+      if (triggeredNotifications.length >= MAX_REMINDER_NUM_FOR_FREE) {
+        throw new Error(
+          `Free users can add up to ${MAX_REMINDER_NUM_FOR_FREE} reminders`,
+        );
       }
 
       // Create a time-based trigger
