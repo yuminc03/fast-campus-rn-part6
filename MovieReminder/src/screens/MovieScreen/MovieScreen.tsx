@@ -22,6 +22,7 @@ import People from './People';
 import YouTubeVideo from './YouTubeVideo';
 import CalendarModule from '../modules/CalendarModule';
 import useReminder from '../../hooks/useReminder';
+import RewardAd from '../../components/RewardAd';
 
 const MovieScreen = () => {
   const {
@@ -163,6 +164,7 @@ const MovieScreen = () => {
       ) : (
         renderMovie()
       )}
+      <RewardAd />
     </Screen>
   );
 };
