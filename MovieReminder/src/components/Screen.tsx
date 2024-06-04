@@ -15,6 +15,7 @@ import Colors from 'open-color';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { RootStackParamList } from '../types';
+import ScreenBannerAd from './ScreenBannerAd';
 
 interface ScreenProps {
   title?: string;
@@ -62,7 +63,8 @@ const Screen = ({
           </View>
         </View>
       )}
-      <View style={styles.body}>{children}</View>
+      <ScreenBannerAd />
+      <View style={styles.content}>{children}</View>
     </SafeAreaView>
   );
 };
@@ -93,7 +95,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.black,
   },
-  body: {
+  content: {
     flex: 1,
   },
   backIcon: {
