@@ -1,4 +1,8 @@
 {
   "name": "MovieReminder",
-  "displayName": "MovieReminder"
+  "displayName": "MovieReminder",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-9242538862106063~9891480389",
+    "ios_app_id": "ca-app-pub-9242538862106063~2468485621"
+  }
 }
