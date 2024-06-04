@@ -73,18 +73,25 @@ const useReminder = () => {
   );
 
   const loadReminders = useCallback(async () => {
-    return await notifee.getTriggerNotifications();
+    const notifications = await notifee.getTriggerNotifications();
+    setReminders(notifications);
   }, []);
 
+  const removeReminder = useCallback(
+    async (id: string) => {
+      await notifee.cancelTriggerNotification(id);
+      await loadReminders();
+    },
+    [loadReminders],
+  );
+
   useEffect(() => {
-    (async () => {
-      const notifications = await loadReminders();
-      setReminders(notifications);
-    })();
+    loadReminders();
   }, [loadReminders]);
 
   return {
     addReminder,
+    removeReminder,
     reminders,
   };
 };
