@@ -4,6 +4,7 @@ import notifee, {
   AndroidNotificationSetting,
   AuthorizationStatus,
   TimestampTrigger,
+  TriggerNotification,
   TriggerType,
 } from '@notifee/react-native';
 import { Platform } from 'react-native';
@@ -11,6 +12,7 @@ import moment from 'moment';
 
 const useReminder = () => {
   const [channelId, setChannelId] = useState<string | null>(null);
+  const [reminders, setReminders] = useState<TriggerNotification[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -51,7 +53,7 @@ const useReminder = () => {
       // Create a time-based trigger
       const trigger: TimestampTrigger = {
         type: TriggerType.TIMESTAMP,
-        timestamp: moment().add(5, 'seconds').valueOf(), // fire at 11:10am (10 minutes before meeting)
+        timestamp: moment(releaseDate).valueOf(), // fire at 11:10am (10 minutes before meeting)
       };
 
       // Create a trigger notification
@@ -70,8 +72,20 @@ const useReminder = () => {
     [channelId],
   );
 
+  const loadReminders = useCallback(async () => {
+    return await notifee.getTriggerNotifications();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const notifications = await loadReminders();
+      setReminders(notifications);
+    })();
+  }, [loadReminders]);
+
   return {
     addReminder,
+    reminders,
   };
 };
 
