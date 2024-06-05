@@ -1,9 +1,68 @@
 import React from 'react';
-import Screen from '../../components/Screen';
 import Purchases, { PurchasesPackage } from 'react-native-purchases';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import OpenColor from 'open-color';
+
+import Screen from '../../components/Screen';
+
+const PurchaseScreen = () => {
+  const [products, setProducts] = useState<PurchasesPackage[]>([]);
+  useEffect(() => {
+    (async () => {
+      const offerings = await Purchases.getOfferings();
+      if (offerings.current?.availablePackages != null) {
+        setProducts(offerings.current.availablePackages);
+      }
+    })();
+  }, []);
+
+  return (
+    <Screen>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.titleText}>프리미엄 이용권</Text>
+          <Text style={styles.subtitleText}>
+            무제한 개봉일 알림 추가와 광고 없이 앱을 사용할 수 있습니다!
+          </Text>
+        </View>
+        <View style={styles.products}>
+          {products.map(p => {
+            const periodText =
+              p.packageType === 'MONTHLY'
+                ? '월'
+                : p.packageType === 'WEEKLY'
+                ? '주'
+                : p.packageType;
+            return (
+              <TouchableOpacity
+                key={p.identifier}
+                style={styles.product}
+                onPress={async () => {
+                  try {
+                    const result = await Purchases.purchasePackage(p);
+                    console.log('result', result);
+                    Alert.alert('구매 성공');
+                  } catch (e: any) {
+                    // 구매를 취소하거나 실패한 경우
+                    if (!e.userCancelled) {
+                      // 구매 취소가 아닌 실패했을 경우
+                      Alert.alert('구매 실패', e.message);
+                    }
+                  }
+                }}>
+                <Text
+                  style={
+                    styles.priceText
+                  }>{`${p.product.priceString}/${periodText}`}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+    </Screen>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -46,48 +105,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-const PurchaseScreen = () => {
-  const [products, setProducts] = useState<PurchasesPackage[]>([]);
-  useEffect(() => {
-    (async () => {
-      const offerings = await Purchases.getOfferings();
-      if (offerings.current?.availablePackages != null) {
-        setProducts(offerings.current.availablePackages);
-      }
-    })();
-  }, []);
-
-  return (
-    <Screen>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.titleText}>프리미엄 이용권</Text>
-          <Text style={styles.subtitleText}>
-            무제한 개봉일 알림 추가와 광고 없이 앱을 사용할 수 있습니다!
-          </Text>
-        </View>
-        <View style={styles.products}>
-          {products.map(p => {
-            const periodText =
-              p.packageType === 'MONTHLY'
-                ? '월'
-                : p.packageType === 'WEEKLY'
-                ? '주'
-                : p.packageType;
-            return (
-              <TouchableOpacity key={p.identifier} style={styles.product}>
-                <Text
-                  style={
-                    styles.priceText
-                  }>{`${p.product.priceString}/${periodText}`}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </View>
-    </Screen>
-  );
-};
 
 export default PurchaseScreen;
