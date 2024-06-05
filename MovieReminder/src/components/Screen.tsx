@@ -22,6 +22,7 @@ interface ScreenProps {
   title?: string;
   children?: React.ReactNode;
   headerVisible?: boolean;
+  renderLeftComponent?: () => JSX.Element;
   renderRightComponent?: () => JSX.Element;
 }
 
@@ -29,6 +30,7 @@ const Screen = ({
   children,
   title,
   headerVisible = true,
+  renderLeftComponent,
   renderRightComponent,
 }: ScreenProps) => {
   const colorScheme = useColorScheme();
@@ -57,6 +59,7 @@ const Screen = ({
                 <Icon style={styles.backIcon} name="arrow-back" />
               </TouchableOpacity>
             )}
+            {renderLeftComponent != null && renderLeftComponent()}
           </View>
           <View style={styles.center}>
             <Text style={styles.headerTitle}>{title}</Text>

@@ -4,6 +4,7 @@ import {
   FlatList,
   RefreshControl,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -17,6 +18,7 @@ import useMovies from './useMovies';
 import Movie from './Movie';
 import Screen from '../../components/Screen';
 import { RootStackParamList } from '../../types';
+import { version } from '../../../package.json';
 
 const MoviesScreen = () => {
   const { movies, isLoading, loadMore, canLoadMore, refresh } = useMovies();
@@ -45,8 +47,18 @@ const MoviesScreen = () => {
     );
   }, [navigate]);
 
+  const renderLeftComponent = useCallback(() => {
+    return (
+      <View style={styles.headerLeftComponent}>
+        <Text style={styles.versionText}>{`v${version}`}</Text>
+      </View>
+    );
+  }, []);
+
   return (
-    <Screen renderRightComponent={renderRightComponent}>
+    <Screen
+      renderRightComponent={renderRightComponent}
+      renderLeftComponent={renderLeftComponent}>
       {isLoading || !adsInitialized ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator />
@@ -108,6 +120,14 @@ const styles = StyleSheet.create({
   alarmButton: {},
   alarmIcon: {
     fontSize: 24,
+    color: Colors.white,
+  },
+  headerLeftComponent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  versionText: {
     color: Colors.white,
   },
 });
