@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import notifee, {
   AndroidImportance,
   AndroidNotificationSetting,
@@ -10,11 +10,14 @@ import notifee, {
 import { Platform } from 'react-native';
 import moment from 'moment';
 
+import SubscriptionContext from '../components/SubscriptionContext';
+
 const MAX_REMINDER_NUM_FOR_FREE = 2;
 
 const useReminder = () => {
   const [channelId, setChannelId] = useState<string | null>(null);
   const [reminders, setReminders] = useState<TriggerNotification[]>([]);
+  const { subscribed } = useContext(SubscriptionContext);
 
   useEffect(() => {
     (async () => {
@@ -35,8 +38,10 @@ const useReminder = () => {
 
   const canAddReminder = useCallback(async () => {
     const tirggeredNotifications = await notifee.getTriggerNotifications();
-    return tirggeredNotifications.length < MAX_REMINDER_NUM_FOR_FREE;
-  }, []);
+    return (
+      subscribed || tirggeredNotifications.length < MAX_REMINDER_NUM_FOR_FREE
+    );
+  }, [subscribed]);
 
   const loadReminders = useCallback(async () => {
     const notifications = await notifee.getTriggerNotifications();
