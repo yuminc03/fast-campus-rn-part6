@@ -31,7 +31,7 @@ const Screen = ({
   renderRightComponent,
 }: ScreenProps) => {
   const colorScheme = useColorScheme();
-  const { goBack, canGoBack } =
+  const { goBack, canGoBack, navigate } =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const onPressBackButton = useCallback(() => {
     goBack();
@@ -63,6 +63,15 @@ const Screen = ({
           </View>
         </View>
       )}
+      <TouchableOpacity
+        style={styles.subscription}
+        onPress={() => {
+          navigate('Purchase');
+        }}>
+        <Text style={styles.subscriptionText}>
+          구독하고 광고 없이 앱을 무제한으로 사용해보세요!
+        </Text>
+      </TouchableOpacity>
       <ScreenBannerAd />
       <View style={styles.content}>{children}</View>
     </SafeAreaView>
@@ -102,6 +111,14 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 20,
     marginLeft: 20,
+  },
+  subscription: {
+    backgroundColor: Colors.white,
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  subscriptionText: {
+    color: Colors.black,
   },
 });
 

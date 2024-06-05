@@ -7,6 +7,7 @@ import { RootStackParamList } from './src/types';
 import MoviesScreen from './src/screens/MoviesScreen/MoviesScreen';
 import MovieScreen from './src/screens/MovieScreen/MovieScreen';
 import RemindersScreen from './src/screens/RemindersScreen/RemindersScreen';
+import PurchaseScreen from './src/screens/PurchaseScreen/PurchaseScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ const App = () => {
           <Stack.Screen name="Movies" component={MoviesScreen} />
           <Stack.Screen name="Movie" component={MovieScreen} />
           <Stack.Screen name="Reminders" component={RemindersScreen} />
+          <Stack.Screen name="Purchase" component={PurchaseScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </QueryClientProvider>
