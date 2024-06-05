@@ -9,21 +9,41 @@ import MovieScreen from './src/screens/MovieScreen/MovieScreen';
 import RemindersScreen from './src/screens/RemindersScreen/RemindersScreen';
 import PurchaseScreen from './src/screens/PurchaseScreen/PurchaseScreen';
 import SubscriptionProvider from './src/components/SubscriptionProvider';
+import LoadingScreen from './src/screens/LoadingScreen/LoadingScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const queryClient = new QueryClient();
 
 const App = () => {
+  const updating = false;
+  const progress = {
+    total: 100,
+    now: 50,
+  };
+
   return (
     // subscribed 정보를 어디서든 사용할 수 있게 함
     <SubscriptionProvider>
       <QueryClientProvider client={queryClient}>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Movies" component={MoviesScreen} />
-            <Stack.Screen name="Movie" component={MovieScreen} />
-            <Stack.Screen name="Reminders" component={RemindersScreen} />
-            <Stack.Screen name="Purchase" component={PurchaseScreen} />
+            {updating ? (
+              <Stack.Screen name="Loading">
+                {prop => (
+                  <LoadingScreen
+                    {...prop}
+                    progress={progress != null ? progress : undefined}
+                  />
+                )}
+              </Stack.Screen>
+            ) : (
+              <>
+                <Stack.Screen name="Movies" component={MoviesScreen} />
+                <Stack.Screen name="Movie" component={MovieScreen} />
+                <Stack.Screen name="Reminders" component={RemindersScreen} />
+                <Stack.Screen name="Purchase" component={PurchaseScreen} />
+              </>
+            )}
           </Stack.Navigator>
         </NavigationContainer>
       </QueryClientProvider>
