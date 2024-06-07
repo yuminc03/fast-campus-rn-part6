@@ -9,13 +9,19 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "code-push-staging-ios": "appcenter codepush release-react -a yuminc03/MovieReminder-iOS -d Staging",
-    "code-push-staging-android": "appcenter codepush release-react -a yuminc03/MovieReminder-Android -d Production"
+    "code-push-staging-android": "appcenter codepush release-react -a yuminc03/MovieReminder-Android -d Production",
+    "code-push-prod-ios": "appcenter codepush release-react -a yuminc03/MovieReminder-iOS -d Production",
+    "code-push-prod-android": "appcenter codepush release-react -a yuminc03/MovieReminder-Android -d Production",
+    "get-version-number-js": "node ./scripts/get-version-number-js.js",
+    "get-version-number-android": "node ./scripts/get-version-number-android.js android/app/build.gradle",
+    "get-build-number-android": "node ./scripts/get-build-number-android.js android/app/build.gradle"
   },
   "dependencies": {
     "@notifee/react-native": "^7.8.2",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "@tanstack/react-query": "^5.40.0",
+    "appcenter-cli": "^3.0.0",
     "axios": "^1.7.2",
     "moment": "^2.30.1",
     "open-color": "^1.9.1",
