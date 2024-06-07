@@ -1,0 +1,22 @@
+name: moviereminder-ci
+on:
+  pull_request:
+    branches:
+      - "master"
+jobs:
+  moviereminder-test:
+    name: Test JS
+    runs-on: rbuntu-latest
+    env:
+      PROJECT_PATH: MovieReminder
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+      - name: Install packages
+        run: yarn install --frozen-lockfile # 항상 yarn.lock 파일 버전대로 설치됨
+        working-directory: ${{ env.PROJECCT_PATH }} # yarn을 실행할 directory
+      - name: Test
+        run: npm run test
+        working-directory: ${{ env.PROJECCT_PATH }}
